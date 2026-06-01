@@ -1,0 +1,34 @@
+meta {
+  name: Login Insurance User
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{authUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "username": "agent.raj",
+    "password": "pass1234"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  if (body && body.token) {
+    bru.setEnvVar("insuranceToken", body.token);
+  }
+}
+

@@ -1,0 +1,32 @@
+meta {
+  name: Register Insurance User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{authUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "username": "agent.raj",
+    "password": "pass1234",
+    "email": "raj.patel@insurance.com",
+    "phoneNo": "9876543210",
+    "userType": "INSURANCE_USER",
+    "insuranceUserId": "{{insuranceUserId}}"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

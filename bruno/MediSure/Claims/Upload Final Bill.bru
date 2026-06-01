@@ -1,0 +1,22 @@
+meta {
+  name: Upload Final Bill
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{claimsUrl}}/api/claims/{{claimId}}/final-bill
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+body:json {
+  {
+    "finalBillAmount": 12500.00
+  }
+}

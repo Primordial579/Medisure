@@ -1,0 +1,38 @@
+meta {
+  name: Update Insurance User
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{insuranceUrl}}/api/insurance/users/{{insuranceUserId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+script:pre-request {
+  const insuranceUserId = bru.getEnvVar("insuranceUserId");
+  if (!insuranceUserId || !insuranceUserId.trim()) {
+    throw new Error("insuranceUserId is empty. Run 'Create Insurance User' first or set insuranceUserId in local environment.");
+  }
+}
+
+body:json {
+  {
+    "name": "Raj Patel",
+    "email": "raj.updated@insurance.com",
+    "phoneNo": "9998887776",
+    "role": "SENIOR_AGENT"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

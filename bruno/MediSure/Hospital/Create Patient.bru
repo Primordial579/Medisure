@@ -1,0 +1,39 @@
+meta {
+  name: Create Patient
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{hospitalUrl}}/api/hospital/patients
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+body:json {
+  {
+    "name": "Arun Kumar",
+    "dob": "1994-03-14",
+    "phoneNo": "9876543210",
+    "email": "arun.kumar@example.com",
+    "bloodGroup": "O+",
+    "insuranceId": "{{insuranceId}}",
+    "healthReport": "Patient admitted with high fever and dehydration."
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  const body = res.getBody();
+  if (body && body.patientId) {
+    bru.setEnvVar("patientId", body.patientId);
+  }
+}

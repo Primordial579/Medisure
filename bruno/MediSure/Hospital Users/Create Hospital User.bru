@@ -1,0 +1,37 @@
+meta {
+  name: Create Hospital User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{hospitalUrl}}/api/hospital/users
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "username": "dr.priya",
+    "name": "Dr. Priya Sharma",
+    "hospitalName": "City General Hospital",
+    "email": "priya.sharma@hospital.com",
+    "phoneNo": "9876543210",
+    "role": "DOCTOR"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  if (body && body.userId) {
+    bru.setEnvVar("hospitalUserId", body.userId);
+  }
+}

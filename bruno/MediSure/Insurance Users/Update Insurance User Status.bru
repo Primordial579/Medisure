@@ -1,0 +1,44 @@
+meta {
+  name: Update Insurance User Status
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{insuranceUrl}}/api/insurance/users/{{insuranceUserId}}/status
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJsaW5rZWRVc2VySWQiOiJJVTEwMDEiLCJ1c2VyVHlwZSI6IklOU1VSQU5DRV9VU0VSIiwic3ViIjoiYWdlbnQucmFqIiwiaWF0IjoxNzc3NDM4NDUzLCJleHAiOjE3Nzc0NDIwNTN9.rs_kKnKoYTYwgF_u5ZSuSbIJoAo7k8lFgohCFRvbEJYE-o6rpWfCLfLteOGIBokV
+}
+
+body:json {
+  {
+    "status": "REVOKED"
+  }
+}
+
+script:pre-request {
+  const insuranceUserId = bru.getEnvVar("insuranceUserId");
+  if (!insuranceUserId || !insuranceUserId.trim()) {
+    throw new Error("insuranceUserId is empty. Run 'Create Insurance User' first or set insuranceUserId in local environment.");
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("status is REVOKED", function () {
+    const body = res.getBody();
+    expect(body.status).to.equal("REVOKED");
+  });
+}

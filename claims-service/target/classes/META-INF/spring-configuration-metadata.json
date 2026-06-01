@@ -1,0 +1,33 @@
+{
+  "groups": [
+    {
+      "name": "jwt",
+      "description": "JWT configuration properties"
+    },
+    {
+      "name": "hospital",
+      "description": "Hospital service configuration"
+    },
+    {
+      "name": "insurance",
+      "description": "Insurance service configuration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT secret key for token signing and validation"
+    },
+    {
+      "name": "hospital.service.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for hospital service"
+    },
+    {
+      "name": "insurance.service.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for insurance service"
+    }
+  ]
+}

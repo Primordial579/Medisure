@@ -1,0 +1,25 @@
+meta {
+  name: Process Claim
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{claimsUrl}}/api/claims/{{claimId}}/process
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+body:json {
+  {
+    "decision": "SETTLED",
+    "approvedAmount": 12000.00,
+    "deductible": 1500.00,
+    "remarks": "Claim approved after underwriter review. Deductible applied as per policy terms."
+  }
+}

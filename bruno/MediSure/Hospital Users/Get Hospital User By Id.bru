@@ -1,0 +1,26 @@
+meta {
+  name: Get Hospital User By Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{hospitalUrl}}/api/hospital/users/{{hospitalUserId}}
+  body: none
+  auth: none
+}
+
+
+
+script:pre-request {
+  const hospitalUserId = bru.getEnvVar("hospitalUserId");
+  if (!hospitalUserId || !hospitalUserId.trim()) {
+    throw new Error("hospitalUserId is empty. Run 'Create Hospital User' first or set hospitalUserId in local environment.");
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,40 @@
+meta {
+  name: Update Hospital User Status
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{hospitalUrl}}/api/hospital/users/{{hospitalUserId}}/status
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+script:pre-request {
+  const hospitalUserId = bru.getEnvVar("hospitalUserId");
+  if (!hospitalUserId || !hospitalUserId.trim()) {
+    throw new Error("hospitalUserId is empty. Run 'Create Hospital User' first or set hospitalUserId in local environment.");
+  }
+}
+
+body:json {
+  {
+    "status": "REVOKED"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("status is REVOKED", function () {
+    const body = res.getBody();
+    expect(body.status).to.equal("REVOKED");
+  });
+}

@@ -1,0 +1,47 @@
+meta {
+  name: Create Insurance
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{insuranceUrl}}/api/insurance/insurances
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJsaW5rZWRVc2VySWQiOiJJVTEwMDEiLCJ1c2VyVHlwZSI6IklOU1VSQU5DRV9VU0VSIiwic3ViIjoiYWdlbnQucmFqIiwiaWF0IjoxNzc3NDM4NDUzLCJleHAiOjE3Nzc0NDIwNTN9.rs_kKnKoYTYwgF_u5ZSuSbIJoAo7k8lFgohCFRvbEJYE-o6rpWfCLfLteOGIBokV
+}
+
+body:json {
+  {
+    "name": "Arun Kumar",
+    "age": 32,
+    "dob": "1994-03-14",
+    "phoneNo": "9876543210",
+    "mailId": "arun.kumar@example.com",
+    "bloodGroup": "O+",
+    "coverage": 500000,
+    "preauthPercentage": 80,
+    "startDate": "2026-04-24",
+    "endDate": "2027-04-23",
+    "policyType": "FAMILY_FLOATER"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  const body = res.getBody();
+  if (body && body.insuranceId) {
+    bru.setEnvVar("insuranceId", body.insuranceId);
+  }
+}

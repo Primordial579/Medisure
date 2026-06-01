@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS claims (
+    claim_id VARCHAR(50) PRIMARY KEY,
+    patient_id VARCHAR(50) NOT NULL,
+    patient_name VARCHAR(255) NOT NULL,
+    insurance_id VARCHAR(50) NOT NULL,
+    diagnosis VARCHAR(255) NOT NULL,
+    estimated_amount DECIMAL(12, 2) NOT NULL,
+    final_bill_amount DECIMAL(12, 2),
+    preauth_status VARCHAR(50),
+    claim_status VARCHAR(50),
+    preauthorized_amount DECIMAL(12, 2),
+    approved_amount DECIMAL(12, 2),
+    deductible DECIMAL(12, 2),
+    payable_amount DECIMAL(12, 2),
+    remarks TEXT,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

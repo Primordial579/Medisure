@@ -1,0 +1,15 @@
+meta {
+  name: Get All Claims
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{claimsUrl}}/api/claims
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{hospitalToken}}
+}

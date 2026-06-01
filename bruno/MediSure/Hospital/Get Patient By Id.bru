@@ -1,0 +1,29 @@
+meta {
+  name: Get Patient By Id
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{hospitalUrl}}/api/hospital/patients/{{patientId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+script:pre-request {
+  const patientId = bru.getEnvVar("patientId");
+  if (!patientId || !patientId.trim()) {
+    throw new Error("patientId is empty. Run 'Create Patient' first or set patientId in local environment.");
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

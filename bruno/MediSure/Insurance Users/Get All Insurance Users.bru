@@ -1,0 +1,19 @@
+meta {
+  name: Get All Insurance Users
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{insuranceUrl}}/api/insurance/users
+  body: none
+  auth: none
+}
+
+
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

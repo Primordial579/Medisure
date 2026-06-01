@@ -1,0 +1,42 @@
+meta {
+  name: Deduct Coverage (Claim Deduction)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{insuranceUrl}}/api/insurance/insurances/{{insuranceId}}/deduct
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+script:pre-request {
+  const insuranceId = bru.getEnvVar("insuranceId");
+  if (!insuranceId || !insuranceId.trim()) {
+    throw new Error("insuranceId is empty. Run 'Create Insurance' first or set insuranceId in local environment.");
+  }
+}
+
+body:json {
+  {
+    "claimId": "CLM12345",
+    "amount": 25000
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  if (body && body.remainingCoverage !== undefined) {
+    bru.setEnvVar("insuranceRemainingCoverage", body.remainingCoverage);
+  }
+}
+

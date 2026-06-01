@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS auth_users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(512) NOT NULL,
+    email VARCHAR(255),
+    phone_no VARCHAR(20),
+    user_type VARCHAR(30) NOT NULL,
+    hospital_user_id VARCHAR(20),
+    insurance_user_id VARCHAR(20),
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

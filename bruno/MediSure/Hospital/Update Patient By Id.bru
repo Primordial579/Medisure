@@ -1,0 +1,41 @@
+meta {
+  name: Update Patient By Id
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{hospitalUrl}}/api/hospital/patients/{{patientId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+script:pre-request {
+  const patientId = bru.getEnvVar("patientId");
+  if (!patientId || !patientId.trim()) {
+    throw new Error("patientId is empty. Run 'Create Patient' first or set patientId in local environment.");
+  }
+}
+
+body:json {
+  {
+    "name": "Arun Kumar",
+    "dob": "1994-03-14",
+    "phoneNo": "9998887776",
+    "email": "arun.updated@example.com",
+    "bloodGroup": "O+",
+    "insuranceId": "{{insuranceId}}",
+    "healthReport": "Updated report: patient is stable and under observation."
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,39 @@
+meta {
+  name: Create Claim
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{claimsUrl}}/api/claims
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJsaW5rZWRVc2VySWQiOiJIVTEwMDEiLCJ1c2VyVHlwZSI6IkhPU1BJVEFMX1VTRVIiLCJzdWIiOiJkci5wcml5YSIsImlhdCI6MTc3NzQzOTE5NSwiZXhwIjoxNzc3NDQyNzk1fQ.G0BSbR56PJdhJuDAyl_BKYcZeLmaCvIoNy4bABz6GyRnu0wL6erCiKKbbVGk5RsJ
+}
+
+body:json {
+  {
+    "patientId": "{{patientId}}",
+    "diagnosis": "High fever and dehydration",
+    "estimatedAmount": 15000.00
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  const body = res.getBody();
+  if (body && body.claimId) {
+    bru.setEnvVar("claimId", body.claimId);
+  }
+}

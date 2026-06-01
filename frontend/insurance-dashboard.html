@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSure - Insurance Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Medi<span>Sure</span></h2>
+            <p>Insurance Portal</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Workspace</div>
+                <button class="nav-item active-insurance" data-section="overview" onclick="showSection('overview', this)">
+                    <span class="icon">&#9635;</span> Portfolio Summary
+                </button>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Policy Operations</div>
+                <button class="nav-item" data-section="policies" onclick="showSection('policies', this)">
+                    <span class="icon">&#9645;</span> Policy Directory
+                </button>
+                <button class="nav-item" data-section="createPolicy" onclick="showSection('createPolicy', this)">
+                    <span class="icon">&#43;</span> Issue Policy
+                </button>
+                <button class="nav-item" data-section="verifyInsurance" onclick="showSection('verifyInsurance', this)">
+                    <span class="icon">&#10003;</span> Eligibility Check
+                </button>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Claim Operations</div>
+                <button class="nav-item" data-section="claims" onclick="showSection('claims', this)">
+                    <span class="icon">&#9638;</span> Claim Queue
+                </button>
+                <button class="nav-item" data-section="processClaim" onclick="showSection('processClaim', this)">
+                    <span class="icon">&#9679;</span> Adjudicate Claim
+                </button>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">User Access</div>
+                <button class="nav-item" data-section="users" onclick="showSection('users', this)">
+                    <span class="icon">&#9634;</span> Insurance Users
+                </button>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar" style="background:var(--accent-insurance);">U</div>
+                <div class="user-details">
+                    <div class="name" id="userName">User</div>
+                    <div class="role" id="userRoleLabel">Insurance Underwriter</div>
+                </div>
+            </div>
+            <button class="nav-item" onclick="logout()" style="margin-top:8px; color:#ef4444;">
+                <span class="icon">&#10140;</span> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <h2 id="pageTitle">Portfolio Summary</h2>
+            <div class="topbar-actions">
+                <span style="font-size:13px; color:var(--gray-500);" id="dateDisplay"></span>
+            </div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- ===== OVERVIEW SECTION ===== -->
+            <div class="section-panel active" id="section-overview">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon purple">&#x1F4C4;</div>
+                        <div class="stat-info">
+                            <h3 id="statPolicies">-</h3>
+                            <p>Total Policies</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">&#x1F4CB;</div>
+                        <div class="stat-info">
+                            <h3 id="statClaims">-</h3>
+                            <p>Total Claims</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">&#x23F3;</div>
+                        <div class="stat-info">
+                            <h3 id="statPendingClaims">-</h3>
+                            <p>Pending Claims</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">&#x1F465;</div>
+                        <div class="stat-info">
+                            <h3 id="statUsers">-</h3>
+                            <p>Team Members</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Policies -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Recent Policies</h3>
+                        <button class="btn btn-insurance btn-sm" onclick="showSection('createPolicy')">+ New Policy</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Insurance ID</th>
+                                    <th>Holder Name</th>
+                                    <th>Policy Type</th>
+                                    <th>Coverage</th>
+                                    <th>Validity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPoliciesBody">
+                                <tr><td colspan="5" class="empty-state"><p>Loading...</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== POLICIES SECTION ===== -->
+            <div class="section-panel" id="section-policies">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>All Policies</h3>
+                        <button class="btn btn-insurance btn-sm" onclick="showSection('createPolicy')">+ New Policy</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Insurance ID</th>
+                                    <th>Holder</th>
+                                    <th>Age</th>
+                                    <th>Policy Type</th>
+                                    <th>Coverage</th>
+                                    <th>Remaining</th>
+                                    <th>Pre-auth %</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allPoliciesBody">
+                                <tr><td colspan="10" class="empty-state"><p>Loading...</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CREATE POLICY SECTION ===== -->
+            <div class="section-panel" id="section-createPolicy">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Create Insurance Policy</h3>
+                    </div>
+                    <div style="padding:24px;">
+                        <form id="createPolicyForm" onsubmit="handleCreatePolicy(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Holder Name</label>
+                                    <input type="text" id="polName" placeholder="Full name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Age</label>
+                                    <input type="number" id="polAge" placeholder="32" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date of Birth</label>
+                                    <input type="date" id="polDob" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="polPhone" placeholder="9876543210" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="polEmail" placeholder="holder@email.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Blood Group</label>
+                                    <select id="polBlood">
+                                        <option value="">Select</option>
+                                        <option>A+</option><option>A-</option>
+                                        <option>B+</option><option>B-</option>
+                                        <option>O+</option><option>O-</option>
+                                        <option>AB+</option><option>AB-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Coverage Amount (&#8377;)</label>
+                                    <input type="number" id="polCoverage" placeholder="500000" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Pre-auth Percentage (%)</label>
+                                    <input type="number" id="polPreauth" placeholder="80" min="0" max="100" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="polStart" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="polEnd" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Policy Type</label>
+                                <select id="polType" required>
+                                    <option value="">Select type</option>
+                                    <option value="INDIVIDUAL">Individual</option>
+                                    <option value="FAMILY_FLOATER">Family Floater</option>
+                                    <option value="GROUP">Group</option>
+                                    <option value="SENIOR_CITIZEN">Senior Citizen</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-insurance" id="createPolicyBtn">Create Policy</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== VERIFY INSURANCE SECTION ===== -->
+            <div class="section-panel" id="section-verifyInsurance">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Verify Insurance Validity</h3>
+                    </div>
+                    <div style="padding:24px;">
+                        <form id="verifyForm" onsubmit="handleVerify(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Insurance ID</label>
+                                    <input type="text" id="verifyInsId" placeholder="e.g. INS1001" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Estimated Amount (&#8377;)</label>
+                                    <input type="number" id="verifyAmount" placeholder="25000" step="0.01" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-insurance" id="verifyBtn">Verify</button>
+                        </form>
+                        <div id="verifyResult" style="display:none; margin-top:24px; padding:20px; border-radius:8px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CLAIMS SECTION ===== -->
+            <div class="section-panel" id="section-claims">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Find Claim by ID</h3>
+                    </div>
+                    <div style="padding:24px;">
+                        <form id="claimLookupForm" onsubmit="handleClaimLookup(event)">
+                            <div class="form-row">
+                                <div class="form-group" style="margin-bottom:0;">
+                                    <label>Claim ID</label>
+                                    <input type="text" id="lookupClaimId" placeholder="e.g. CLM1001" required>
+                                </div>
+                                <div class="form-group" style="display:flex; align-items:flex-end; margin-bottom:0;">
+                                    <button type="submit" class="btn btn-insurance" id="lookupClaimBtn">Get Claim Details</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>All Claims</h3>
+                        <button class="btn btn-outline btn-sm" onclick="loadClaims()">Refresh Claims</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Claim ID</th>
+                                    <th>Patient ID</th>
+                                    <th>Diagnosis</th>
+                                    <th>Estimated</th>
+                                    <th>Final Bill</th>
+                                    <th>Pre-auth</th>
+                                    <th>Approved</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allClaimsBody">
+                                <tr><td colspan="9" class="empty-state"><p>Loading...</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PROCESS CLAIM SECTION ===== -->
+            <div class="section-panel" id="section-processClaim">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Process Claim</h3>
+                    </div>
+                    <div style="padding:24px;">
+                        <form id="processClaimForm" onsubmit="handleProcessClaim(event)">
+                            <div id="preauthInfo" style="display:none;"></div>
+                            <div class="form-group">
+                                <label>Claim ID</label>
+                                <input type="text" id="processClaimId" placeholder="e.g. CLM1001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Decision</label>
+                                <select id="processDecision" required>
+                                    <option value="">Select decision</option>
+                                    <option value="SETTLED">Settle / Approve</option>
+                                    <option value="DENIED">Deny</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Approved Amount (&#8377;)</label>
+                                    <input type="number" id="processApproved" placeholder="12000" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Deductible (&#8377;)</label>
+                                    <input type="number" id="processDeductible" placeholder="1500" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Remarks</label>
+                                <textarea id="processRemarks" rows="3" placeholder="Reason for decision..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-insurance" id="processBtn">Submit Decision</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== USERS SECTION ===== -->
+            <div class="section-panel" id="section-users">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Insurance Team Members</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allUsersBody">
+                                <tr><td colspan="6" class="empty-state"><p>Loading...</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="modal-overlay" id="policyDetailsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Policy Details</h3>
+            <button class="modal-close" onclick="closePolicyDetailsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="policyDetailsContent"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline btn-sm" onclick="closePolicyDetailsModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="claimDetailsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Claim Details</h3>
+            <button class="modal-close" onclick="closeClaimDetailsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="claimDetailsContent"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline btn-sm" onclick="closeClaimDetailsModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="editInsuranceUserModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Update Insurance User</h3>
+            <button class="modal-close" onclick="closeEditInsuranceUserModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="editInsuranceUserForm" onsubmit="handleUpdateInsuranceUser(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>User ID</label>
+                        <input type="text" id="editInsuranceUserId" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="editInsuranceUsername" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="editInsuranceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editInsuranceEmail" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="editInsurancePhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="editInsuranceRole" required>
+                            <option value="UNDERWRITER">Insurance Underwriter</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding:0; border-top:none; margin-top:8px;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeEditInsuranceUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-insurance btn-sm" id="updateInsuranceUserBtn">Update User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== Config =====
+    const AUTH_URL = 'http://localhost:9090';
+    const INSURANCE_URL = 'http://localhost:9092';
+    const CLAIMS_URL = 'http://localhost:9093';
+
+    // ===== Auth Guard =====
+    const token = sessionStorage.getItem('token');
+    const username = sessionStorage.getItem('username');
+    const userType = sessionStorage.getItem('userType');
+
+    if (!token || userType !== 'INSURANCE_USER') {
+        window.location.href = 'login.html';
+    }
+
+    // ===== Init =====
+    document.getElementById('userName').textContent = username || 'User';
+    document.getElementById('userAvatar').textContent = (username || 'U')[0].toUpperCase();
+    document.getElementById('userRoleLabel').textContent = formatRoleLabel(sessionStorage.getItem('role') || 'UNDERWRITER');
+    document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-IN', {
+        weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    // ===== Navigation =====
+    const sectionTitles = {
+        overview: 'Portfolio Summary',
+        policies: 'Policy Directory',
+        createPolicy: 'Issue Policy',
+        verifyInsurance: 'Eligibility Check',
+        claims: 'Claim Queue',
+        processClaim: 'Adjudicate Claim',
+        users: 'Insurance Users'
+    };
+
+    function showSection(name, sourceEl = null) {
+        document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('section-' + name).classList.add('active');
+        document.getElementById('pageTitle').textContent = sectionTitles[name] || 'Dashboard';
+
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(n => n.classList.remove('active-insurance'));
+        const navKey = ['overview', 'policies', 'createPolicy', 'verifyInsurance', 'claims', 'processClaim', 'users'].includes(name) ? name : null;
+        const activeNav = sourceEl && sourceEl.classList.contains('nav-item')
+            ? sourceEl
+            : (navKey ? document.querySelector(`.sidebar-nav .nav-item[data-section="${navKey}"]`) : null);
+        if (activeNav) {
+            activeNav.classList.add('active-insurance');
+        }
+
+        if (name === 'overview') loadOverview();
+        if (name === 'policies') loadPolicies();
+        if (name === 'claims') loadClaims();
+        if (name === 'users') loadUsers();
+    }
+
+    // ===== API Helpers =====
+    function authHeaders() {
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        };
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    function formatCurrency(amount) {
+        const value = Number(amount || 0);
+        return '&#8377;' + value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function getClaimStatus(claim) {
+        return claim.claimStatus || claim.status || '-';
+    }
+
+    function getErrorMessage(payload, fallback) {
+        if (!payload) {
+            return fallback;
+        }
+
+        return payload.message || payload.error || payload.details || fallback;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '-')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatRoleLabel(role) {
+        return String(role || '')
+            .replace(/_/g, ' ')
+            .toLowerCase()
+            .replace(/\b\w/g, char => char.toUpperCase()) || 'Insurance Underwriter';
+    }
+
+    function statusBadge(status) {
+        const map = {
+            'PREAUTH_APPROVED': 'approved',
+            'PREAUTH_REJECTED': 'rejected',
+            'UNDER_REVIEW': 'in-review',
+            'SETTLED': 'settled',
+            'DENIED': 'rejected',
+            'REJECTED': 'rejected'
+        };
+        return map[status] || 'pending';
+    }
+
+    // ===== Policy Details Modal =====
+    async function openPolicyDetails(insuranceId) {
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/insurances/${insuranceId}`, { headers: authHeaders() });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(getErrorMessage(err, 'Failed to load policy details'));
+            }
+
+            const p = await res.json();
+            const remainCov = p.remainingCoverage != null ? Number(p.remainingCoverage) : Number(p.coverage || 0);
+            const totalCov = Number(p.coverage || 0);
+            const usedPct = totalCov > 0 ? Math.min(100, Math.round(((totalCov - remainCov) / totalCov) * 100)) : 0;
+
+            document.getElementById('policyDetailsContent').innerHTML = `
+                <div class="details-grid">
+                    <div class="detail-item"><span class="detail-label">Insurance ID</span><strong>${escapeHtml(p.insuranceId)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Holder Name</span><strong>${escapeHtml(p.name)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Age</span><strong>${p.age || '-'}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Date of Birth</span><strong>${p.dob || '-'}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Phone</span><strong>${escapeHtml(p.phoneNo || '-')}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Email</span><strong>${escapeHtml(p.mailId || '-')}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Blood Group</span><strong>${escapeHtml(p.bloodGroup || '-')}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Policy Type</span><strong>${escapeHtml(p.policyType || '-')}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Plan Coverage</span><strong>${formatCurrency(totalCov)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Remaining Coverage</span><strong style="color:${remainCov <= 0 ? '#dc2626' : remainCov < totalCov * 0.2 ? '#dc2626' : '#16a34a'};">${remainCov <= 0 ? '₹0 (Fully Used)' : formatCurrency(remainCov)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Coverage Used</span><strong style="color:${usedPct >= 100 ? '#dc2626' : usedPct > 80 ? '#f59e0b' : '#16a34a'};">${usedPct}%${usedPct >= 100 ? ' (Exhausted)' : ''}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Pre-auth %</span><strong>${p.preauthPercentage || '-'}%</strong></div>
+                    <div class="detail-item"><span class="detail-label">Start Date</span><strong>${p.startDate || '-'}</strong></div>
+                    <div class="detail-item"><span class="detail-label">End Date</span><strong>${p.endDate || '-'}</strong></div>
+                </div>
+                <div style="margin-top:16px; padding:12px; background:#f1f5f9; border-radius:8px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; color:var(--gray-600);">
+                        <span>Coverage Utilization</span>
+                        <span>${usedPct}% used</span>
+                    </div>
+                    <div style="height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                        <div style="height:100%; width:${usedPct}%; background:${usedPct > 80 ? '#dc2626' : usedPct > 50 ? '#f59e0b' : '#16a34a'}; border-radius:4px; transition:width 0.3s;"></div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('policyDetailsModal').classList.add('show');
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    function closePolicyDetailsModal() {
+        document.getElementById('policyDetailsModal').classList.remove('show');
+    }
+
+    // ===== Load Overview =====
+    async function loadOverview() {
+        try {
+            const [policiesRes, claimsRes, usersRes] = await Promise.all([
+                fetch(`${INSURANCE_URL}/api/insurance/insurances`, { headers: authHeaders() }),
+                fetch(`${CLAIMS_URL}/api/claims`, { headers: authHeaders() }),
+                fetch(`${INSURANCE_URL}/api/insurance/users`, { headers: authHeaders() })
+            ]);
+
+            const policies = policiesRes.ok ? await policiesRes.json() : [];
+            const claims = claimsRes.ok ? await claimsRes.json() : [];
+            const users = usersRes.ok ? await usersRes.json() : [];
+
+            document.getElementById('statPolicies').textContent = policies.length;
+            document.getElementById('statClaims').textContent = claims.length;
+            document.getElementById('statPendingClaims').textContent = claims.filter(c =>
+                ['PREAUTH_APPROVED', 'UNDER_REVIEW'].includes(getClaimStatus(c))
+            ).length;
+            document.getElementById('statUsers').textContent = users.length;
+
+            // Recent policies (last 5)
+            const recent = policies.slice(-5).reverse();
+            const tbody = document.getElementById('recentPoliciesBody');
+            if (recent.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><p>No policies found</p></td></tr>';
+            } else {
+                tbody.innerHTML = recent.map(p => `
+                    <tr>
+                        <td><strong>${p.insuranceId}</strong></td>
+                        <td>${p.name}</td>
+                        <td>${p.policyType || '-'}</td>
+                        <td>&#8377;${(p.coverage || 0).toLocaleString()}</td>
+                        <td>${p.startDate || '-'} to ${p.endDate || '-'}</td>
+                    </tr>
+                `).join('');
+            }
+        } catch (err) {
+            showToast('Failed to load overview data', 'error');
+        }
+    }
+
+    // ===== Load Policies =====
+    async function loadPolicies() {
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/insurances`, { headers: authHeaders() });
+            const policies = res.ok ? await res.json() : [];
+            const tbody = document.getElementById('allPoliciesBody');
+
+            if (policies.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><p>No policies found</p></td></tr>';
+            } else {
+                tbody.innerHTML = policies.map(p => `
+                    <tr>
+                        <td><strong>${p.insuranceId}</strong></td>
+                        <td>${p.name}</td>
+                        <td>${p.age || '-'}</td>
+                        <td>${p.policyType || '-'}</td>
+                        <td>&#8377;${(p.coverage || 0).toLocaleString()}</td>
+                        <td>&#8377;${(p.remainingCoverage != null ? p.remainingCoverage : p.coverage || 0).toLocaleString()}</td>
+                        <td>${p.preauthPercentage || '-'}%</td>
+                        <td>${p.startDate || '-'}</td>
+                        <td>${p.endDate || '-'}</td>
+                        <td><button class="btn btn-outline btn-sm" onclick="openPolicyDetails('${p.insuranceId}')">View</button></td>
+                    </tr>
+                `).join('');
+            }
+        } catch (err) {
+            showToast('Failed to load policies', 'error');
+        }
+    }
+
+    // ===== Create Policy =====
+    async function handleCreatePolicy(e) {
+        e.preventDefault();
+        const btn = document.getElementById('createPolicyBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Creating...';
+
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/insurances`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    name: document.getElementById('polName').value.trim(),
+                    age: parseInt(document.getElementById('polAge').value),
+                    dob: document.getElementById('polDob').value,
+                    phoneNo: document.getElementById('polPhone').value.trim(),
+                    mailId: document.getElementById('polEmail').value.trim(),
+                    bloodGroup: document.getElementById('polBlood').value,
+                    coverage: parseFloat(document.getElementById('polCoverage').value),
+                    preauthPercentage: parseInt(document.getElementById('polPreauth').value),
+                    startDate: document.getElementById('polStart').value,
+                    endDate: document.getElementById('polEnd').value,
+                    policyType: document.getElementById('polType').value
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(getErrorMessage(err, 'Failed to create policy'));
+            }
+
+            const data = await res.json();
+            showToast(`Policy ${data.insuranceId} created successfully!`);
+            document.getElementById('createPolicyForm').reset();
+            loadPolicies();
+            loadOverview();
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Create Policy';
+        }
+    }
+
+    // ===== Verify Insurance =====
+    async function handleVerify(e) {
+        e.preventDefault();
+        const btn = document.getElementById('verifyBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/insurances/verify`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    insuranceId: document.getElementById('verifyInsId').value.trim(),
+                    estimatedAmount: parseFloat(document.getElementById('verifyAmount').value)
+                })
+            });
+
+            const data = await res.json();
+            const resultDiv = document.getElementById('verifyResult');
+            resultDiv.style.display = 'block';
+
+            if (!res.ok) {
+                resultDiv.style.background = '#fee2e2';
+                resultDiv.innerHTML = `<strong style="color:#991b1b;">Verification Failed</strong><p style="color:#991b1b; margin-top:8px;">${data.reason || data.message || 'Insurance not valid'}</p>`;
+            } else {
+                const status = (data.status || '').toLowerCase();
+                const isValid = status === 'valid';
+                const isExpired = status === 'expired';
+
+                let bgColor, titleColor, icon, title;
+                if (isValid) {
+                    bgColor = '#dcfce7'; titleColor = '#166534';
+                    icon = '&#x2705;'; title = 'Insurance Valid';
+                } else if (isExpired) {
+                    bgColor = '#fee2e2'; titleColor = '#991b1b';
+                    icon = '&#x274C;'; title = 'Insurance Expired';
+                } else {
+                    bgColor = '#fef9c3'; titleColor = '#854d0e';
+                    icon = '&#x26A0;&#xFE0F;'; title = 'Insurance Not Valid';
+                }
+
+                resultDiv.style.background = bgColor;
+                resultDiv.innerHTML = `
+                    <strong style="color:${titleColor}; font-size:16px;">
+                        ${icon} ${title}
+                    </strong>
+                    <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:14px; color:var(--gray-700);">
+                        ${data.insuranceId ? `<div><span style="color:var(--gray-500);">Insurance ID</span><br><strong>${data.insuranceId}</strong></div>` : ''}
+                        ${data.status ? `<div><span style="color:var(--gray-500);">Status</span><br><strong style="color:${titleColor}; text-transform:uppercase;">${data.status}</strong></div>` : ''}
+                        ${data.estimatedAmount != null ? `<div><span style="color:var(--gray-500);">Estimated Amount</span><br><strong>&#8377;${Number(data.estimatedAmount).toLocaleString()}</strong></div>` : ''}
+                        ${data.planCoverage != null ? `<div><span style="color:var(--gray-500);">Plan Coverage</span><br><strong>&#8377;${Number(data.planCoverage).toLocaleString()}</strong></div>` : ''}
+                        ${data.remainingCoverage != null ? `<div><span style="color:var(--gray-500);">Remaining Coverage</span><br><strong>&#8377;${Number(data.remainingCoverage).toLocaleString()}</strong></div>` : ''}
+                        ${data.endDate ? `<div><span style="color:var(--gray-500);">Policy End Date</span><br><strong>${data.endDate}</strong></div>` : ''}
+                    </div>
+                    ${data.reason ? `<div style="margin-top:16px; padding:12px; background:${isValid ? '#bbf7d0' : isExpired ? '#fecaca' : '#fef08a'}; border-radius:6px; font-size:13px; color:${titleColor};"><strong>Reason:</strong> ${data.reason}</div>` : ''}
+                `;
+            }
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Verify';
+        }
+    }
+
+    // ===== Load Claims =====
+    async function loadClaims() {
+        try {
+            const res = await fetch(`${CLAIMS_URL}/api/claims`, { headers: authHeaders() });
+            const claims = res.ok ? await res.json() : [];
+            const tbody = document.getElementById('allClaimsBody');
+
+            if (claims.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><p>No claims found</p></td></tr>';
+            } else {
+                tbody.innerHTML = claims.map(c => `
+                    <tr>
+                        <td><strong>${c.claimId}</strong></td>
+                        <td>${c.patientId}</td>
+                        <td>${c.diagnosis || '-'}</td>
+                        <td>${formatCurrency(c.estimatedAmount)}</td>
+                        <td>${c.finalBillAmount ? formatCurrency(c.finalBillAmount) : '-'}</td>
+                        <td>${c.preauthStatus === 'APPROVED' && c.preauthorizedAmount ? formatCurrency(c.preauthorizedAmount) : (c.preauthStatus === 'REJECTED' ? 'Rejected' : '-')}</td>
+                        <td>${c.approvedAmount ? formatCurrency(c.approvedAmount) : '-'}</td>
+                        <td><span class="badge badge-${statusBadge(getClaimStatus(c))}">${getClaimStatus(c)}</span></td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-outline btn-sm" onclick="openClaimDetails('${c.claimId}')">View</button>
+                                ${['UNDER_REVIEW', 'PREAUTH_REJECTED'].includes(getClaimStatus(c)) ?
+                                    `<button class="btn btn-insurance btn-sm" onclick="prefillProcess('${c.claimId}')">Process</button>` :
+                                    ''
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } catch (err) {
+            showToast('Failed to load claims', 'error');
+        }
+    }
+
+    async function prefillProcess(claimId) {
+        document.getElementById('processClaimId').value = claimId;
+        showSection('processClaim');
+
+        // Fetch claim details to show preauth info
+        try {
+            const res = await fetch(`${CLAIMS_URL}/api/claims/${claimId}`, { headers: authHeaders() });
+            if (res.ok) {
+                const claim = await res.json();
+                const finalBill = claim.finalBillAmount || claim.estimatedAmount || 0;
+                const preauthApproved = claim.preauthStatus === 'APPROVED';
+                const preauth = preauthApproved ? (claim.preauthorizedAmount || 0) : 0;
+                const preauthInfoDiv = document.getElementById('preauthInfo');
+                if (preauthInfoDiv) {
+                    preauthInfoDiv.style.display = 'block';
+                    if (preauthApproved) {
+                        preauthInfoDiv.innerHTML = `
+                            <div style="padding:16px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; margin-bottom:16px;">
+                                <strong style="color:#1e40af;">Claim Summary</strong>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; font-size:14px;">
+                                    <div><span style="color:var(--gray-500);">Final Bill</span><br><strong>&#8377;${Number(finalBill).toLocaleString()}</strong></div>
+                                    <div><span style="color:var(--gray-500);">Pre-auth (Approved &amp; Deducted)</span><br>
+                                        <strong style="color:#166534;">&#8377;${Number(preauth).toLocaleString()}</strong>
+                                    </div>
+                                    <div><span style="color:var(--gray-500);">Status</span><br><strong>${getClaimStatus(claim)}</strong></div>
+                                    <div><span style="color:var(--gray-500);">Insurance ID</span><br><strong>${claim.insuranceId || '-'}</strong></div>
+                                </div>
+                                <div style="margin-top:12px; padding:10px; background:#dbeafe; border-radius:6px; font-size:13px; color:#1e40af;">
+                                    <strong>Note:</strong> Pre-auth of &#8377;${Number(preauth).toLocaleString()} was already deducted from coverage. Enter total approved amount &mdash; only the difference (approved - &#8377;${Number(preauth).toLocaleString()}) will be additionally deducted.
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        preauthInfoDiv.innerHTML = `
+                            <div style="padding:16px; background:#fef3c7; border:1px solid #fcd34d; border-radius:8px; margin-bottom:16px;">
+                                <strong style="color:#92400e;">Claim Summary</strong>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; font-size:14px;">
+                                    <div><span style="color:var(--gray-500);">Final Bill</span><br><strong>&#8377;${Number(finalBill).toLocaleString()}</strong></div>
+                                    <div><span style="color:var(--gray-500);">Pre-auth</span><br><strong style="color:#dc2626;">Rejected (not applied)</strong></div>
+                                    <div><span style="color:var(--gray-500);">Status</span><br><strong>${getClaimStatus(claim)}</strong></div>
+                                    <div><span style="color:var(--gray-500);">Insurance ID</span><br><strong>${claim.insuranceId || '-'}</strong></div>
+                                </div>
+                                <div style="margin-top:12px; padding:10px; background:#fde68a; border-radius:6px; font-size:13px; color:#92400e;">
+                                    <strong>Note:</strong> Pre-auth was rejected. The approved amount you enter will be directly deducted from remaining coverage.
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                document.getElementById('processApproved').placeholder = preauthApproved
+                    ? `Total to approve (e.g. ${finalBill}). Preauth ${preauth} already deducted.`
+                    : `Amount to approve. Will be deducted from remaining coverage.`;
+            }
+        } catch (err) {
+            console.warn('Could not fetch claim details for prefill', err);
+        }
+    }
+
+    // ===== Process Claim =====
+    async function handleProcessClaim(e) {
+        e.preventDefault();
+        const btn = document.getElementById('processBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+        const claimId = document.getElementById('processClaimId').value.trim();
+
+        try {
+            const res = await fetch(`${CLAIMS_URL}/api/claims/${claimId}/process`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    decision: document.getElementById('processDecision').value,
+                    approvedAmount: parseFloat(document.getElementById('processApproved').value) || 0,
+                    deductible: parseFloat(document.getElementById('processDeductible').value) || 0,
+                    remarks: document.getElementById('processRemarks').value.trim()
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(getErrorMessage(err, 'Failed to process claim'));
+            }
+
+            showToast(`Claim ${claimId} processed successfully!`);
+            document.getElementById('processClaimForm').reset();
+            loadClaims();
+            loadOverview();
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Submit Decision';
+        }
+    }
+
+    async function handleClaimLookup(e) {
+        e.preventDefault();
+        const btn = document.getElementById('lookupClaimBtn');
+        const claimId = document.getElementById('lookupClaimId').value.trim();
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Loading...';
+
+        try {
+            await openClaimDetails(claimId);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Get Claim Details';
+        }
+    }
+
+    async function openClaimDetails(claimId) {
+        try {
+            const res = await fetch(`${CLAIMS_URL}/api/claims/${claimId}`, { headers: authHeaders() });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(getErrorMessage(err, 'Failed to load claim'));
+            }
+
+            const claim = await res.json();
+            const status = getClaimStatus(claim);
+            document.getElementById('claimDetailsContent').innerHTML = `
+                <div class="details-grid">
+                    <div class="detail-item"><span class="detail-label">Claim ID</span><strong>${escapeHtml(claim.claimId)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Patient ID</span><strong>${escapeHtml(claim.patientId)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Patient Name</span><strong>${escapeHtml(claim.patientName)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Insurance ID</span><strong>${escapeHtml(claim.insuranceId)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Pre-auth Status</span><strong>${escapeHtml(claim.preauthStatus || '-')}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Claim Status</span><strong>${escapeHtml(status)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Estimated Amount</span><strong>${formatCurrency(claim.estimatedAmount)}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Pre-authorized</span><strong>${claim.preauthStatus === 'APPROVED' && claim.preauthorizedAmount ? formatCurrency(claim.preauthorizedAmount) : (claim.preauthStatus === 'REJECTED' ? 'Rejected' : '-')}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Final Bill</span><strong>${claim.finalBillAmount ? formatCurrency(claim.finalBillAmount) : '-'}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Approved Amount</span><strong>${claim.approvedAmount ? formatCurrency(claim.approvedAmount) : '-'}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Deductible</span><strong>${claim.deductible ? formatCurrency(claim.deductible) : '-'}</strong></div>
+                    <div class="detail-item"><span class="detail-label">Payable Amount</span><strong>${claim.payableAmount ? formatCurrency(claim.payableAmount) : '-'}</strong></div>
+                </div>
+                <div class="detail-block">
+                    <span class="detail-label">Diagnosis</span>
+                    <p>${escapeHtml(claim.diagnosis || '-')}</p>
+                </div>
+                <div class="detail-block">
+                    <span class="detail-label">Remarks</span>
+                    <p>${escapeHtml(claim.remarks || '-')}</p>
+                </div>
+            `;
+            document.getElementById('claimDetailsModal').classList.add('show');
+        } catch (err) {
+            showToast(err.message, 'error');
+            throw err;
+        }
+    }
+
+    function closeClaimDetailsModal() {
+        document.getElementById('claimDetailsModal').classList.remove('show');
+    }
+
+    // ===== Load Users =====
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/users`, { headers: authHeaders() });
+            const users = res.ok ? await res.json() : [];
+            const tbody = document.getElementById('allUsersBody');
+
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><p>No team members found</p></td></tr>';
+            } else {
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td><strong>${u.userId}</strong></td>
+                        <td>${u.username}</td>
+                        <td>${u.name}</td>
+                        <td>${formatRoleLabel(u.role)}</td>
+                        <td><span class="badge badge-${u.status === 'ACTIVE' ? 'active' : 'revoked'}">${u.status}</span></td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="openEditInsuranceUserModal('${u.userId}')">Edit</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } catch (err) {
+            showToast('Failed to load users', 'error');
+        }
+    }
+
+    async function openEditInsuranceUserModal(userId) {
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/users/${userId}`, { headers: authHeaders() });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(getErrorMessage(err, 'Failed to load user details'));
+            }
+
+            const user = await res.json();
+            document.getElementById('editInsuranceUserId').value = user.userId || '';
+            document.getElementById('editInsuranceUsername').value = user.username || '';
+            document.getElementById('editInsuranceName').value = user.name || '';
+            document.getElementById('editInsuranceEmail').value = user.email || '';
+            document.getElementById('editInsurancePhone').value = user.phoneNo || '';
+            document.getElementById('editInsuranceRole').value = user.role || 'UNDERWRITER';
+            document.getElementById('editInsuranceUserModal').classList.add('show');
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    function closeEditInsuranceUserModal() {
+        document.getElementById('editInsuranceUserModal').classList.remove('show');
+    }
+
+    async function handleUpdateInsuranceUser(e) {
+        e.preventDefault();
+        const btn = document.getElementById('updateInsuranceUserBtn');
+        const userId = document.getElementById('editInsuranceUserId').value.trim();
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Updating...';
+
+        try {
+            const res = await fetch(`${INSURANCE_URL}/api/insurance/users/${userId}`, {
+                method: 'PUT',
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    name: document.getElementById('editInsuranceName').value.trim(),
+                    email: document.getElementById('editInsuranceEmail').value.trim(),
+                    phoneNo: document.getElementById('editInsurancePhone').value.trim(),
+                    role: document.getElementById('editInsuranceRole').value
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(getErrorMessage(err, 'Failed to update user'));
+            }
+
+            const updated = await res.json().catch(() => ({}));
+            if (updated.username === username) {
+                sessionStorage.setItem('role', updated.role || document.getElementById('editInsuranceRole').value);
+                document.getElementById('userRoleLabel').textContent = formatRoleLabel(sessionStorage.getItem('role'));
+            }
+
+            showToast(`User ${userId} updated successfully!`);
+            closeEditInsuranceUserModal();
+            loadUsers();
+            loadOverview();
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Update User';
+        }
+    }
+
+    // ===== Logout =====
+    function logout() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    // ===== Initial Load =====
+    loadOverview();
+</script>
+
+</body>
+</html>

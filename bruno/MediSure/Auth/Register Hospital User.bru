@@ -1,0 +1,32 @@
+meta {
+  name: Register Hospital User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{authUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "username": "dr.priya",
+    "password": "pass1234",
+    "email": "priya.sharma@hospital.com",
+    "phoneNo": "9876543210",
+    "userType": "HOSPITAL_USER",
+    "hospitalUserId": "{{hospitalUserId}}"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

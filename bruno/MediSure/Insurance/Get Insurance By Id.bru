@@ -1,0 +1,33 @@
+meta {
+  name: Get Insurance By Id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{insuranceUrl}}/api/insurance/insurances/{{insuranceId}}
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJsaW5rZWRVc2VySWQiOiJJVTEwMDEiLCJ1c2VyVHlwZSI6IklOU1VSQU5DRV9VU0VSIiwic3ViIjoiYWdlbnQucmFqIiwiaWF0IjoxNzc3NDM4NDUzLCJleHAiOjE3Nzc0NDIwNTN9.rs_kKnKoYTYwgF_u5ZSuSbIJoAo7k8lFgohCFRvbEJYE-o6rpWfCLfLteOGIBokV
+}
+
+script:pre-request {
+  const insuranceId = bru.getEnvVar("insuranceId");
+  if (!insuranceId || !insuranceId.trim()) {
+    throw new Error("insuranceId is empty. Run 'Create Insurance' first or set insuranceId in local environment.");
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

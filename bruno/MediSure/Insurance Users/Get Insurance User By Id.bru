@@ -1,0 +1,26 @@
+meta {
+  name: Get Insurance User By Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{insuranceUrl}}/api/insurance/users/{{insuranceUserId}}
+  body: none
+  auth: none
+}
+
+
+
+script:pre-request {
+  const insuranceUserId = bru.getEnvVar("insuranceUserId");
+  if (!insuranceUserId || !insuranceUserId.trim()) {
+    throw new Error("insuranceUserId is empty. Run 'Create Insurance User' first or set insuranceUserId in local environment.");
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

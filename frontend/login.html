@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSure - Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="logo">
+            <h1>Medi<span>Sure</span></h1>
+            <p>Sign in to your account</p>
+        </div>
+
+        <!-- Service Tabs -->
+        <div class="service-tabs">
+            <button class="service-tab active-hospital" id="tabHospital" onclick="selectService('HOSPITAL')">
+                &#x1F3E5; Hospital
+            </button>
+            <button class="service-tab" id="tabInsurance" onclick="selectService('INSURANCE')">
+                &#x1F6E1;&#xFE0F; Insurance
+            </button>
+        </div>
+
+        <!-- Alert -->
+        <div id="loginAlert" style="display:none; padding:12px 16px; border-radius:8px; font-size:14px; margin-bottom:16px;"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-hospital" id="loginBtn">
+                Sign In
+            </button>
+        </form>
+
+        <div class="login-footer">
+            Don't have an account? <a href="#" id="createUserLink" onclick="goToRegister()">Create New User</a>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    const AUTH_URL = 'http://localhost:9090';
+    const HOSPITAL_URL = 'http://localhost:9091';
+    const INSURANCE_URL = 'http://localhost:9092';
+    let selectedService = 'HOSPITAL';
+
+    function selectService(service) {
+        selectedService = service;
+        const tabH = document.getElementById('tabHospital');
+        const tabI = document.getElementById('tabInsurance');
+        const loginBtn = document.getElementById('loginBtn');
+
+        tabH.className = 'service-tab';
+        tabI.className = 'service-tab';
+
+        if (service === 'HOSPITAL') {
+            tabH.className = 'service-tab active-hospital';
+            loginBtn.className = 'btn btn-hospital';
+        } else {
+            tabI.className = 'service-tab active-insurance';
+            loginBtn.className = 'btn btn-insurance';
+        }
+
+        hideAlert();
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const loginBtn = document.getElementById('loginBtn');
+
+        if (!username || !password) {
+            showAlert('Please fill in all fields', 'error');
+            return;
+        }
+
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner"></span> Signing In...';
+
+        try {
+            const res = await fetch(`${AUTH_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Invalid credentials');
+            }
+
+            // Verify user type matches selected service
+            const expectedType = selectedService === 'HOSPITAL' ? 'HOSPITAL_USER' : 'INSURANCE_USER';
+            if (data.userType && data.userType !== expectedType) {
+                throw new Error(`This account is not a ${selectedService.toLowerCase()} user`);
+            }
+
+            // Store auth data
+            sessionStorage.setItem('token', data.token);
+            sessionStorage.setItem('username', data.username);
+            sessionStorage.setItem('userType', data.userType);
+            sessionStorage.setItem('linkedUserId', data.linkedUserId || '');
+
+            const role = await resolveUserRole(data);
+            sessionStorage.setItem('role', role || '');
+
+            // Redirect to appropriate dashboard
+            if (selectedService === 'HOSPITAL') {
+                window.location.href = 'hospital-dashboard.html';
+            } else {
+                window.location.href = 'insurance-dashboard.html';
+            }
+
+        } catch (err) {
+            showAlert(err.message, 'error');
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'Sign In';
+        }
+    }
+
+    async function resolveUserRole(loginData) {
+        try {
+            const userType = loginData.userType;
+            const baseUrl = userType === 'HOSPITAL_USER' ? HOSPITAL_URL : INSURANCE_URL;
+            const endpoint = userType === 'HOSPITAL_USER' ? '/api/hospital/users' : '/api/insurance/users';
+            const response = await fetch(`${baseUrl}${endpoint}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + loginData.token,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                return '';
+            }
+
+            const users = await response.json();
+            if (!Array.isArray(users)) {
+                return '';
+            }
+
+            const byLinkedId = users.find(user => user.userId === loginData.linkedUserId);
+            const byUsername = users.find(user => user.username === loginData.username);
+            const matchedUser = byLinkedId || byUsername;
+            return matchedUser?.role || '';
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function goToRegister() {
+        if (selectedService === 'HOSPITAL') {
+            window.location.href = 'hospital-register.html';
+        } else {
+            window.location.href = 'insurance-register.html';
+        }
+    }
+
+    function showAlert(message, type) {
+        const alert = document.getElementById('loginAlert');
+        alert.style.display = 'block';
+        alert.textContent = message;
+        if (type === 'error') {
+            alert.style.background = '#fee2e2';
+            alert.style.color = '#991b1b';
+        } else {
+            alert.style.background = '#dcfce7';
+            alert.style.color = '#166534';
+        }
+    }
+
+    function hideAlert() {
+        document.getElementById('loginAlert').style.display = 'none';
+    }
+
+    // Check if already logged in
+    (function() {
+        const token = sessionStorage.getItem('token');
+        const userType = sessionStorage.getItem('userType');
+        if (token && userType) {
+            if (userType === 'HOSPITAL_USER') {
+                window.location.href = 'hospital-dashboard.html';
+            } else if (userType === 'INSURANCE_USER') {
+                window.location.href = 'insurance-dashboard.html';
+            }
+        }
+    })();
+</script>
+
+</body>
+</html>

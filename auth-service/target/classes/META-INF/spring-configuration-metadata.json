@@ -1,0 +1,21 @@
+{
+  "groups": [
+    {
+      "name": "jwt",
+      "description": "JWT configuration properties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT secret key for token signing and validation"
+    },
+    {
+      "name": "jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "JWT token expiration time in milliseconds",
+      "defaultValue": 3600000
+    }
+  ]
+}

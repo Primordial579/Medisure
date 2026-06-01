@@ -1,0 +1,39 @@
+meta {
+  name: Update Hospital User
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{hospitalUrl}}/api/hospital/users/{{hospitalUserId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+script:pre-request {
+  const hospitalUserId = bru.getEnvVar("hospitalUserId");
+  if (!hospitalUserId || !hospitalUserId.trim()) {
+    throw new Error("hospitalUserId is empty. Run 'Create Hospital User' first or set hospitalUserId in local environment.");
+  }
+}
+
+body:json {
+  {
+    "name": "Dr. Priya Sharma",
+    "hospitalName": "City General Hospital",
+    "email": "priya.updated@hospital.com",
+    "phoneNo": "9998887776",
+    "role": "SENIOR_DOCTOR"
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Get All Insurances
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{insuranceUrl}}/api/insurance/insurances
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+

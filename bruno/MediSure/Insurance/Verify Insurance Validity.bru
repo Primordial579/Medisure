@@ -1,0 +1,37 @@
+meta {
+  name: Verify Insurance Validity
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{insuranceUrl}}/api/insurance/insurances/verify
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{insuranceToken}}
+}
+
+script:pre-request {
+  const insuranceId = bru.getEnvVar("insuranceId");
+  if (!insuranceId || !insuranceId.trim()) {
+    throw new Error("insuranceId is empty. Run 'Create Insurance' first or set insuranceId in local environment.");
+  }
+}
+
+body:json {
+  {
+    "insuranceId": "{{insuranceId}}",
+    "estimatedAmount": 25000
+  }
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+

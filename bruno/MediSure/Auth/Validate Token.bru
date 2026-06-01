@@ -1,0 +1,27 @@
+meta {
+  name: Validate Token
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{authUrl}}/api/auth/validate
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{hospitalToken}}
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("token is valid", function () {
+    const body = res.getBody();
+    expect(body.valid).to.equal(true);
+  });
+}
+

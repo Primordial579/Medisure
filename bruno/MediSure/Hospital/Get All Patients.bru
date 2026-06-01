@@ -1,0 +1,22 @@
+meta {
+  name: Get All Patients
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{hospitalUrl}}/api/hospital/patients
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{hospitalToken}}
+}
+
+script:post-response {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
